@@ -18,6 +18,7 @@
 - 自定义付费套餐
 - 一键导出对话
 - 任务拉新获客
+- 切换不同LLM厂家API
 
 ## 开始使用
 
@@ -71,12 +72,27 @@
 - [ ] 分销
 - [ ] 统计视图
 
+## TODO（onekb）
+- [x] 新增对 `ChatGLM` 的支持
+- [ ] 定义Model规则
+- [ ] 路由接口改名
+- [ ] 前端自由切换Model
+- [ ] 不同Model分开定价
+- [ ] 本地知识库
+
+## ChatGLM 使用说明
+由于管理端还未开源，所以配置key需要进入到数据库修改。`config` 表里的 `type=1` 在 `config` 字段里，JSON添加 `"zhipu_key":"xxxxx.xxx"` 。保存后需清理缓存，删除 `redis` 里的 `.AIc:App\Http\Dto\Config\AiChatConfigDto` 。
+
+[API key 在这获取](https://open.bigmodel.cn/usercenter/apikeys) 。
+
+默认是ChatGLM模型，如需修改变更 `App\Http\Control\Web\ChatController` 的类变量 `$service` 即可。
+
 ## 参与贡献
 
 我们深知这不是一个完美的产品，但是它只是一个开始，欢迎加入我们一起完善！:heart: 请参阅 [贡献指南](./CONTRIBUTING.md)
 
-<a href="https://github.com/gptlink/gptlink/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=gptlink/gptlink" />
+<a href="https://github.com/onekb/gptlink/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=onekb/gptlink" />
 </a>
 
 ## 特别鸣谢
