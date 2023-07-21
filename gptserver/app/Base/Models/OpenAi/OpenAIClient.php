@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Base\OpenAi;
+namespace App\Base\Models\OpenAi;
 
 use App\Http\Dto\Config\AiChatConfigDto;
 use Hyperf\HttpMessage\Server\Connection\SwooleConnection;

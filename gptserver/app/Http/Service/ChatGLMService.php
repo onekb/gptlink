@@ -2,15 +2,14 @@
 
 namespace App\Http\Service;
 
-use App\Base\Models\OpenAi\ChatCompletionsRequest;
-use App\Base\Models\OpenAi\OpenaiChatCompletionsRequest;
-use App\Base\Models\OpenAi\OpenAIClient;
+use App\Base\Models\ZhiPuAi\ChatGLMStdCompletionsRequest;
+use App\Base\Models\ZhiPuAi\ZhiPuAIClient;
 use App\Http\Dto\ChatDto;
 use App\Http\Dto\Config\AiChatConfigDto;
 use App\Http\Service\Abstract\ChatAbstract;
 use App\Model\Config;
 
-class ChatGPTService extends ChatAbstract
+class ChatGLMService extends ChatAbstract
 {
     /**
      * 发送请求
@@ -26,15 +25,11 @@ class ChatGPTService extends ChatAbstract
         /* @var AiChatConfigDto $config */
         $config = Config::toDto(Config::AI_CHAT);
 
-        // 发送请求
-        $client = new OpenAIClient($config);
+        $client = new ZhiPuAIClient();
 
-        $request = match ($config->channel) {
-            AiChatConfigDto::OPENAI => new OpenaiChatCompletionsRequest($dto, $config),
-            default => new ChatCompletionsRequest($dto, $config),
-        };
+        $request = new ChatGLMStdCompletionsRequest($dto, $config);
 
-        /* @var ChatCompletionsRequest $result */
+        /* @var ChatGLMStdCompletionsRequest $result */
         $result = $client->exec($request);
 
         logger()->info('openai result', [

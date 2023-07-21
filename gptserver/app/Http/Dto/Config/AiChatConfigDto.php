@@ -4,6 +4,7 @@ namespace App\Http\Dto\Config;
 
 use App\Model\Config;
 use Cblink\Dto\Dto;
+use Firebase\JWT\JWT;
 
 /**
  * @property string $channel 渠道
@@ -33,6 +34,7 @@ class AiChatConfigDto extends Dto implements ConfigDtoInterface
         'gptlink_key',
         'openai_key', 'openai_model', 'openai_tokens', 'openai_response_tokens', 'openai_host', 'openai_proxy_host',
         'azure_endpoint', 'azure_model', 'azure_key', 'azure_api_version',
+        'zhipu_key',
     ];
 
     /**
@@ -56,6 +58,7 @@ class AiChatConfigDto extends Dto implements ConfigDtoInterface
             'azure_model' => $this->getItem('azure_model'),
             'azure_key' => $this->getItem('azure_key'),
             'azure_api_version' => $this->getItem('azure_api_version'),
+            'zhipu_key' => $this->getItem('zhipu_key'),
         ];
     }
 
@@ -79,6 +82,7 @@ class AiChatConfigDto extends Dto implements ConfigDtoInterface
                 'azure_model' => $this->getItem('azure_model'),
                 'azure_key' => $this->getItem('azure_key'),
                 'azure_api_version' => $this->getItem('azure_api_version'),
+                'zhipu_key' => $this->getItem('zhipu_key'),
             ],
         ];
     }
@@ -91,6 +95,29 @@ class AiChatConfigDto extends Dto implements ConfigDtoInterface
         $keys = explode("\n", $this->getItem('openai_key'));
 
         return $keys[array_rand($keys)];
+    }
+
+    public function getZhiPuAiKey()
+    {
+        $keys = explode("\n", $this->getItem('zhipu_key'));
+        $key = $keys[array_rand($keys)];
+
+        [$id, $secret] = explode('.', $key);
+        $payload = [
+            'api_key' => $id,
+            'exp' => (time() + 3600) * 1000,
+            'timestamp' => time() * 1000,
+        ];
+
+        // 非标准JWT
+        $header = ['alg' => 'HS256', 'sign_type' => 'SIGN'];
+        $segments = [];
+        $segments[] = JWT::urlsafeB64Encode((string) JWT::jsonEncode($header));
+        $segments[] = JWT::urlsafeB64Encode((string) JWT::jsonEncode($payload));
+        $signing_input = \implode('.', $segments);
+        $signature = JWT::sign($signing_input, $secret, $header['alg']);
+        $segments[] = JWT::urlsafeB64Encode($signature);
+        return \implode('.', $segments);
     }
 
     /**

@@ -7,18 +7,18 @@ use App\Exception\LogicException;
 use App\Http\Dto\ChatDto;
 use App\Http\Dto\Config\KeywordDto;
 use App\Http\Request\ChatRequest;
-use App\Http\Service\ChatGPTService;
+use App\Http\Service\ChatGLMService;
 use App\Job\GptModelUsesJob;
-use App\Model\Prompt;
 use App\Model\Config;
 use App\Model\MemberPackage;
+use App\Model\Prompt;
 use Cblink\HyperfExt\BaseController;
 use Hyperf\Di\Annotation\Inject;
 
 class ChatController extends BaseController
 {
     #[Inject]
-    protected ChatGPTService $service;
+    protected ChatGLMService $service;
 
     /**
      * 实时返回

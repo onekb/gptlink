@@ -3,8 +3,8 @@
 namespace App\Http\Control\Admin;
 
 use App\Http\Dto\PromptDto;
-use App\Http\Request\Admin\PromptStatusRequest;
 use App\Http\Request\Admin\ChatGptStoreRequest;
+use App\Http\Request\Admin\PromptStatusRequest;
 use App\Http\Resource\Admin\PromptCollection;
 use App\Http\Resource\Admin\PromptResource;
 use App\Model\Prompt;

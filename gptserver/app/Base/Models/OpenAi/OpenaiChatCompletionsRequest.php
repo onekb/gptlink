@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Base\OpenAi;
+namespace App\Base\Models\OpenAi;
 
+use App\Base\Models\MessageInterface;
 use App\Http\Dto\ChatDto;
 use App\Http\Dto\Config\AiChatConfigDto;
 use Hyperf\Utils\Arr;
@@ -9,8 +10,10 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Swoole\Http2\Request;
 
-class OpenaiChatCompletionsRequest extends Request implements RequestInterface
+class OpenaiChatCompletionsRequest extends Request implements RequestInterface, MessageInterface
 {
+    use MessageTrait;
+
     public $path = '/v1/chat/completions';
 
     public $method = 'POST';
@@ -40,7 +43,7 @@ class OpenaiChatCompletionsRequest extends Request implements RequestInterface
     public function __construct(ChatDto $dto, AiChatConfigDto $config)
     {
         $this->dto = $dto;
-        $this->data = json_encode($dto->toOpenAi($config), JSON_UNESCAPED_UNICODE);
+        $this->data = json_encode($this->toRemoteData($config, $dto), JSON_UNESCAPED_UNICODE);
         $this->headers = [
             'Accept' => 'text/event-stream',
             'Content-Type' => 'application/json',

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Base\OpenAi;
+namespace App\Base\Models\OpenAi;
 
 use App\Exception\ErrCode;
 use App\Exception\LogicException;
