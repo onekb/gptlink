@@ -40,7 +40,6 @@ class ChatController extends BaseController
             $pattern = '/' . implode('|', $keywords) . '/i';
 
             preg_match_all($pattern, $request->input('message'), $matches);
-
             throw_if($matches[0], LogicException::class, ErrCode::CHAT_CONTAINS_PROHIBITED_WORDS);
         }
 
