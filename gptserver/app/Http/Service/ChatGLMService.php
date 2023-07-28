@@ -2,7 +2,7 @@
 
 namespace App\Http\Service;
 
-use App\Base\Models\ZhiPuAi\ChatGLMStdCompletionsRequest;
+use App\Base\Models\ZhiPuAi\ChatGLMCompletionsRequest;
 use App\Base\Models\ZhiPuAi\ZhiPuAIClient;
 use App\Http\Dto\ChatDto;
 use App\Http\Dto\Config\AiChatConfigDto;
@@ -20,16 +20,16 @@ class ChatGLMService extends ChatAbstract
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Throwable
      */
-    public function exec(ChatDto $dto, $userId)
+    public function exec(ChatDto $dto, $userId, string $model = '')
     {
         /* @var AiChatConfigDto $config */
         $config = Config::toDto(Config::AI_CHAT);
 
         $client = new ZhiPuAIClient();
 
-        $request = new ChatGLMStdCompletionsRequest($dto, $config);
+        $request = new ChatGLMCompletionsRequest($dto, $config, $model);
 
-        /* @var ChatGLMStdCompletionsRequest $result */
+        /* @var ChatGLMCompletionsRequest $result */
         $result = $client->exec($request);
 
         logger()->info('openai result', [

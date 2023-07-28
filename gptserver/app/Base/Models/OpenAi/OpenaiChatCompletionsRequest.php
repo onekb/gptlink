@@ -40,10 +40,19 @@ class OpenaiChatCompletionsRequest extends Request implements RequestInterface, 
      */
     public $config;
 
-    public function __construct(ChatDto $dto, AiChatConfigDto $config)
+    public function __construct(ChatDto $dto, AiChatConfigDto $config, string $model = 'GPT-3.5')
     {
+        switch ($model) {
+            case 'GPT-4':
+                $model = 'gpt-4-0613';
+                break;
+            case 'GPT-3.5':
+            default:
+                $model = 'gpt-3.5-turbo-0613';
+                break;
+        }
         $this->dto = $dto;
-        $this->data = json_encode($this->toRemoteData($config, $dto), JSON_UNESCAPED_UNICODE);
+        $this->data = json_encode($this->toRemoteData($config, $dto, $model), JSON_UNESCAPED_UNICODE);
         $this->headers = [
             'Accept' => 'text/event-stream',
             'Content-Type' => 'application/json',

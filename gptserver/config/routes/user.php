@@ -4,7 +4,9 @@ use App\Http\Control as Api;
 use Hyperf\HttpServer\Router\Router;
 
 Router::addGroup('', function () {
+    // 弃用（删除openai） 兼容保留 后面删2023-07-28
     Router::post('/openai/chat-process', [Api\Web\ChatController::class, 'process']);
+    Router::post('/chat-process', [Api\Web\ChatController::class, 'process']);
 
     Router::addGroup('/user', function () {
         Router::get('/bill-package', [Api\Web\UserController::class, 'billPackage']);

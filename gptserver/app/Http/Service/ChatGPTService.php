@@ -21,7 +21,7 @@ class ChatGPTService extends ChatAbstract
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Throwable
      */
-    public function exec(ChatDto $dto, $userId)
+    public function exec(ChatDto $dto, $userId, string $model = '')
     {
         /* @var AiChatConfigDto $config */
         $config = Config::toDto(Config::AI_CHAT);
@@ -30,7 +30,7 @@ class ChatGPTService extends ChatAbstract
         $client = new OpenAIClient($config);
 
         $request = match ($config->channel) {
-            AiChatConfigDto::OPENAI => new OpenaiChatCompletionsRequest($dto, $config),
+            AiChatConfigDto::OPENAI => new OpenaiChatCompletionsRequest($dto, $config, $model),
             default => new ChatCompletionsRequest($dto, $config),
         };
 

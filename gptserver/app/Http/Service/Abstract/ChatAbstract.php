@@ -17,9 +17,9 @@ abstract class ChatAbstract
      * @param ChatDto $dto
      * @throws InvalidArgumentException
      */
-    public function chatProcess($userId, ChatDto $dto)
+    public function chatProcess($userId, ChatDto $dto, string $model = '')
     {
-        [$result, $request] = $this->exec($dto, $userId);
+        [$result, $request] = $this->exec($dto, $userId, $model);
 
         // 如果没有正常返回，不进行扣费与记录
         if ($result->result) {
@@ -47,5 +47,5 @@ abstract class ChatAbstract
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Throwable
      */
-    abstract public function exec(ChatDto $dto, $userId);
+    abstract public function exec(ChatDto $dto, $userId, string $model = '');
 }

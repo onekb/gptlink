@@ -8,18 +8,15 @@ use App\Http\Dto\ChatDto;
 use App\Http\Dto\Config\KeywordDto;
 use App\Http\Request\ChatRequest;
 use App\Http\Service\ChatGLMService;
+use App\Http\Service\ChatGPTService;
 use App\Job\GptModelUsesJob;
 use App\Model\Config;
 use App\Model\MemberPackage;
 use App\Model\Prompt;
 use Cblink\HyperfExt\BaseController;
-use Hyperf\Di\Annotation\Inject;
 
 class ChatController extends BaseController
 {
-    #[Inject]
-    protected ChatGLMService $service;
-
     /**
      * 实时返回
      *
@@ -49,9 +46,9 @@ class ChatController extends BaseController
 
         $system = null;
 
-        if ($request->input('prompt_id') && $model = Prompt::query()->find($request->input('prompt_id'))) {
-            $system = $model->system;
-            asyncQueue(new GptModelUsesJob($model->id));
+        if ($request->input('prompt_id') && $prompt = Prompt::query()->find($request->input('prompt_id'))) {
+            $system = $prompt->system;
+            asyncQueue(new GptModelUsesJob($prompt->id));
         }
 
         $chatDto = new ChatDto(array_merge($request->inputs(['message', 'last_id']), [
@@ -60,8 +57,16 @@ class ChatController extends BaseController
             'format_after' => "\n\ndata :",
         ]));
 
+        // 选择模型
+        $model = $request->input('model', '');
+        $service = match ($model) {
+            'GPT-4', 'GPT-3.5' => make(ChatGPTService::class),
+            'ChatGLM-Std', 'ChatGLM-Lite', 'ChatGLM-Pro' => make(ChatGLMService::class),
+            default => make(ChatGPTService::class),
+        };
+
         // 数据量输出
-        $this->service->chatProcess($userId, $chatDto);
+        $service->chatProcess($userId, $chatDto, $model);
 
         return $this->success();
     }

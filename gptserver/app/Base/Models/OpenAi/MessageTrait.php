@@ -8,10 +8,10 @@ use Gioni06\Gpt3Tokenizer\Gpt3Tokenizer;
 
 trait MessageTrait
 {
-    public function toRemoteData(AiChatConfigDto $config, ChatDto $dto)
+    public function toRemoteData(AiChatConfigDto $config, ChatDto $dto, string $model = '')
     {
         return [
-            'model' => $config->openai_model,
+            'model' => $model ?: $config->openai_model,
             'temperature' => $dto->getItem('temperature', 0.8),
             'top_p' => $dto->getItem('top_p', 1),
             'stream' => true,

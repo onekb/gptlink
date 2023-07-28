@@ -7,7 +7,7 @@ use App\Http\Dto\ChatDto;
 use App\Http\Dto\Config\AiChatConfigDto;
 use Swoole\Http2\Request;
 
-class ChatGLMStdCompletionsRequest extends Request implements RequestInterface, MessageInterface
+class ChatGLMCompletionsRequest extends Request implements RequestInterface, MessageInterface
 {
     use MessageTrait;
 
@@ -32,8 +32,23 @@ class ChatGLMStdCompletionsRequest extends Request implements RequestInterface, 
 
     public $result;
 
-    public function __construct(ChatDto $dto, AiChatConfigDto $config)
+    public $model;
+
+    public function __construct(ChatDto $dto, AiChatConfigDto $config, string $model = 'ChatGLM-Std')
     {
+        $this->model = $model;
+        switch ($model) {
+            case 'ChatGLM-Pro':
+                $this->path = '/api/paas/v3/model-api/chatglm_pro/sse-invoke';
+                break;
+            case 'ChatGLM-Std':
+                $this->path = '/api/paas/v3/model-api/chatglm_std/sse-invoke';
+                break;
+            case 'ChatGLM-Lite':
+                $this->path = '/api/paas/v3/model-api/chatglm_lite/sse-invoke';
+                break;
+        }
+
         $this->dto = $dto;
 
         $this->data = json_encode($this->toRemoteData($config, $dto), JSON_UNESCAPED_UNICODE);
@@ -58,20 +73,31 @@ class ChatGLMStdCompletionsRequest extends Request implements RequestInterface, 
             $matches = [];
             $id = [];
 
-            preg_match_all("/data:(.*)\n\n/", $resultData, $matches);
+            preg_match_all("/data:(.*)\n/", $resultData, $matches);
             preg_match_all("/id:(.*)\n/", $resultData, $id);
 
             if (! isset($matches[1])) {
                 continue;
             }
 
-            if (isset($matches[1][0])) {
-                $text .= $matches[1][0];
+            $enterStatus = true;
+            foreach ($matches[1] as $match) {
+                if (strlen($match)) {
+                    $text .= $match;
+                    $enterStatus = true;
+                } else {
+                    if ($enterStatus) {
+                        $text .= "\n";
+                        $enterStatus = false;
+                    } else {
+                        $enterStatus = true;
+                    }
+                }
             }
 
             $result = [
                 'id' => $id[1][0],
-                'model' => 'chatglm-std',
+                'model' => $this->model,
                 'messages' => $text,
                 'created' => time(),
             ];

@@ -2,14 +2,17 @@
 
 namespace App\Base\Models\OpenAi;
 
+use App\Base\Models\MessageInterface;
 use App\Exception\ErrCode;
 use App\Exception\LogicException;
 use App\Http\Dto\ChatDto;
 use App\Http\Dto\Config\AiChatConfigDto;
 use Swoole\Http2\Request;
 
-class ChatCompletionsRequest extends Request implements RequestInterface
+class ChatCompletionsRequest extends Request implements RequestInterface, MessageInterface
 {
+    use MessageTrait;
+
     public $path = '/v1/chat/completions';
 
     public $method = 'POST';
